@@ -11,5 +11,15 @@
   "dependencies": {
     "express": "^5.2.1",
     "nodemon": "^3.1.14"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/araissaalmeida/backend-clinic.git"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/araissaalmeida/backend-clinic/issues"
+  },
+  "homepage": "https://github.com/araissaalmeida/backend-clinic#readme"
 }
