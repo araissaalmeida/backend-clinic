@@ -254,3 +254,79 @@ DELETE /atendimentos/:id
 
 - Postman
 - Nodemon
+
+## Funcionalidades implementadas (complemento)
+
+### Dentistas
+
+CRUD completo de dentistas:
+
+- GET all
+- GET by cpf
+- POST
+- PUT
+- DELETE
+
+Validações implementadas:
+
+- verificação de dentista existente por CPF
+- prevenção de duplicidade de CPF_Dentista
+- prevenção de duplicidade de CRO
+- tratamento de erros HTTP
+
+## Endpoints de Dentistas
+
+### Listar todos os dentistas
+
+```http
+GET /dentistas
+```
+
+### Buscar dentista por CPF
+
+```http
+GET /dentistas/:cpf
+```
+
+### Criar dentista
+
+```http
+POST /dentistas
+```
+
+Exemplo de body:
+
+```json
+{
+    "CPF_Dentista": "12345678901",
+    "nome": "Carlos Mendes",
+    "CRO": "12345",
+    "croUF": "SP",
+    "especialidade": "Ortodontia"
+}
+```
+
+### Editar dentista
+
+```http
+PUT /dentistas/:cpf
+```
+
+Exemplo de body:
+
+```json
+{
+    "nome": "Carlos Mendes Filho",
+    "especialidade": "Implantodontia"
+}
+```
+
+### Deletar dentista
+
+```http
+DELETE /dentistas/:cpf
+```
+
+## Observações
+
+- O recurso de dentistas utiliza `PUT` para atualização, enquanto os demais recursos usam `PATCH`.
