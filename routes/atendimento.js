@@ -1,6 +1,5 @@
 import express from 'express';
-
-import { create, deleteById, getAll, getById, update } from '../controllers/atendimento.js';
+import {getAll, getById, create, update, deleteById} from '../controllers/atendimento.js';
 
 const router = express.Router();
 
@@ -9,5 +8,4 @@ router.get('/:id', getById);
 router.post('/', create);
 router.patch('/:id', update);
 router.delete('/:id', deleteById);
-
-export default router;
+export default router; 

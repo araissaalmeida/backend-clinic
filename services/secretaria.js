@@ -23,3 +23,9 @@ export async function modificaSecretaria(modificacoes, id) {
 export async function excluirSecretaria(id) {
     await secretarias.findByIdAndDelete(id);
 };
+
+export async function buscarSecretariasPorNome(nome) {
+  return await secretarias.find({
+    nome: { $regex: nome, $options: "i" }
+  });
+}
