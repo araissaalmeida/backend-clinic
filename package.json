@@ -2,7 +2,7 @@
   "name": "backend-clinic",
   "version": "1.0.0",
   "main": "index.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "dev": "nodemon app.js"
   },
@@ -10,7 +10,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "mongoose": "^9.6.3",
     "nodemon": "^3.1.14"
   },
   "repository": {
@@ -18,7 +20,6 @@
     "url": "git+https://github.com/araissaalmeida/backend-clinic.git"
   },
   "keywords": [],
-  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/araissaalmeida/backend-clinic/issues"
   },
