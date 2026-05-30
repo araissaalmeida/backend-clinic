@@ -48,9 +48,13 @@ const atendimentoSchema = new mongoose.Schema(
 		status: {
 			type: String,
 			required: true,
-			enum: ['AGENDADO', 'CANCELADO', 'CONCLUÍDO'],
-			uppercase: true,
-			trim: true,
+			enum: ['AGENDADO', 'CANCELADO', 'CONCLUIDO'],
+			set: (value) =>
+				String(value)
+					.trim()
+					.toUpperCase()
+					.normalize('NFD')
+					.replace(/[\u0300-\u036f]/g, ''),
 		},
 		horario_inicio: {
 			type: String,
@@ -69,6 +73,6 @@ const atendimentoSchema = new mongoose.Schema(
 	}
 );
 
-const atendimento = mongoose.model('Atendimento', atendimentoSchema, 'atendimento');
+const atendimento = mongoose.model('Atendimento', atendimentoSchema);
 
 export default atendimento;
