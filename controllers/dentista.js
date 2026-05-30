@@ -1,62 +1,83 @@
-import {
-  listarDentistas as listarDentistasService,
-  buscarDentista as buscarDentistaService,
-  criarDentista as criarDentistaService,
-  editarDentista as editarDentistaService,
-  deletarDentista as deletarDentistaService
-} from '../services/dentista.js';
+import dentistaService from "../services/dentista.js";
 
-function listarDentistas(req, res) {
-  const dentistas = listarDentistasService();
-  res.json(dentistas);
-}
+async function listarDentistas(req, res) {
+  try {
+    const { nome } = req.query; 
+    
+    const dentistas = await dentistaService.listarDentistas(nome);
+    
+    if (dentistas.length === 0) {
+        return res.status(404).json({ message: "Nenhum dentista encontrado com esse nome" });
+    }
 
-function buscarDentista(req, res) {
-  const { cpf } = req.params;
-  const dentista = buscarDentistaService(cpf);
-  
-  if (!dentista) {
-    return res.status(404).json({ error: "Dentista não encontrado" });
+    res.json(dentistas);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-  
-  res.json(dentista);
 }
 
-function criarDentista(req, res) {
-  const novoDentista = req.body;
-  const dentista = criarDentistaService(novoDentista);
-  
-  if (!dentista) {
-    return res.status(400).json({ error: "CPF ou CRO já existe" });
+async function buscarDentista(req, res) {
+  try {
+    const { cpf } = req.params;
+    const dentista = await dentistaService.buscarDentista(cpf);
+    
+    if (!dentista) {
+      return res.status(404).json({ error: "Dentista não encontrado" });
+    }
+    
+    res.json(dentista);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-  
-  res.status(201).json(dentista);
 }
 
-function editarDentista(req, res) {
-  const { cpf } = req.params;
-  const dadosAtualizados = req.body;
-  const dentista = editarDentistaService(cpf, dadosAtualizados);
-  
-  if (!dentista) {
-    return res.status(404).json({ error: "Dentista não encontrado" });
+async function criarDentista(req, res) {
+  try {
+    const novoDentista = req.body;
+    const dentista = await dentistaService.criarDentista(novoDentista);
+    
+    if (!dentista) {
+      return res.status(400).json({ error: "CPF ou CRO já existe" });
+    }
+    
+    res.status(201).json(dentista);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-  
-  res.json(dentista);
 }
 
-function deletarDentista(req, res) {
-  const { cpf } = req.params;
-  const deletado = deletarDentistaService(cpf);
-  
-  if (!deletado) {
-    return res.status(404).json({ error: "Dentista não encontrado" });
+async function editarDentista(req, res) {
+  try {
+    const { cpf } = req.params;
+    const dadosAtualizados = req.body;
+    const dentista = await dentistaService.editarDentista(cpf, dadosAtualizados);
+    
+    if (!dentista) {
+      return res.status(404).json({ error: "Dentista não encontrado" });
+    }
+    
+    res.json(dentista);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-  
-  res.status(204).send();
 }
 
-export {
+async function deletarDentista(req, res) {
+  try {
+    const { cpf } = req.params;
+    const deletado = await dentistaService.deletarDentista(cpf);
+    
+    if (!deletado) {
+      return res.status(404).json({ error: "Dentista não encontrado" });
+    }
+    
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+export default {
   listarDentistas,
   buscarDentista,
   criarDentista,

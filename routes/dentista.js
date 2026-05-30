@@ -1,19 +1,12 @@
-import express from 'express';
-
-import {
-	listarDentistas,
-	buscarDentista,
-	criarDentista,
-	editarDentista,
-	deletarDentista
-} from '../controllers/dentista.js';
+import express from "express";
+import dentistaController from "../controllers/dentista.js";
 
 const router = express.Router();
 
-router.get('/', listarDentistas);
-router.get('/:cpf', buscarDentista);
-router.post('/', criarDentista);
-router.put('/:cpf', editarDentista);
-router.delete('/:cpf', deletarDentista);
+router.get("/", dentistaController.listarDentistas);
+router.get("/:cpf", dentistaController.buscarDentista);
+router.post("/", dentistaController.criarDentista);
+router.put("/:cpf", dentistaController.editarDentista);
+router.delete("/:cpf", dentistaController.deletarDentista);
 
 export default router;
