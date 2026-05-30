@@ -1,8 +1,7 @@
-import { getProcedimentos } from "../controllers/procedimento.js";
 import Procedimento from "../models/Procedimentos.js";
 
 export async function getAllProcedimentos() {
-    const listaProcedimento = await getProcedimentos.find({});
+    const listaProcedimento = await Procedimento.find({});
     return listaProcedimento;
 }
 
