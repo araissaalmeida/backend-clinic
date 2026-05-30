@@ -1,4 +1,4 @@
-import { getTodasSecretarias, getSecretariaPorId, insereSecretaria, modificaSecretaria, excluirSecretaria } from "../services/secretaria.js";
+import { getTodasSecretarias, getSecretariaPorId, insereSecretaria, modificaSecretaria, excluirSecretaria, buscarSecretariasPorNome } from "../services/secretaria.js";
 import mongoose from "mongoose";
 
 export const getSecretarias = async (req,res) =>{
@@ -76,4 +76,19 @@ export const deleteSecretaria = async (req, res) => {
     } catch (error) {
         return res.status(500).json({error: error.message});
     }
+};
+
+export const getSecretariaPorNome = async (req, res) => {
+  try {
+    const { nome } = req.query;
+
+    if (!nome) {
+      return res.status(422).json({ message: "Informe o nome para busca" });
+    }
+
+    const secretarias = await buscarSecretariasPorNome(nome);
+    return res.json(secretarias);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
 };

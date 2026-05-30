@@ -1,7 +1,9 @@
 import { Router } from "express";
-import { getSecretarias, getSecretaria, postSecretaria, patchSecretaria, deleteSecretaria } from "../controllers/secretaria.js";
+import { getSecretarias, getSecretaria, postSecretaria, patchSecretaria, deleteSecretaria, getSecretariaPorNome } from "../controllers/secretaria.js";
 
 const rotaSecretaria = Router();
+
+rotaSecretaria.get('/buscar', getSecretariaPorNome);
 
 rotaSecretaria.get('/', getSecretarias)
 
