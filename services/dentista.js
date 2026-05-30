@@ -1,7 +1,10 @@
-const fs = require("fs");
-const path = require("path");
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const caminhoBanco = path.join(__dirname, "../database/dentista.json");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const caminhoBanco = path.join(__dirname, '../database/dentista.json');
 
 function lerBanco() {
   const dados = fs.readFileSync(caminhoBanco, "utf-8");
@@ -90,7 +93,7 @@ function deletarDentista(cpf) {
   return true;
 }
 
-module.exports = {
+export {
   listarDentistas,
   buscarDentista,
   criarDentista,

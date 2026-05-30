@@ -5,6 +5,7 @@ import {
     getAtendimentoById,
     updateAtendimento
 } from '../services/atendimento.js';
+import mongoose from 'mongoose';
 
 const allowedBodyFields = [
     'idAtendimento',
@@ -26,7 +27,7 @@ const requiredBodyFields = [
 ];
 
 function isValidId(id) {
-    return /^\d+$/.test(String(id)) && Number(id) > 0;
+    return mongoose.isValidObjectId(id);
 }
 
 function isValidBodyId(id) {
@@ -68,8 +69,8 @@ function validateBody(data, { isUpdate = false } = {}) {
 
 async function getAll(req, res) {
     try {
-        const { tipoAtendimento } = req.query;
-        const atendimentos = await getAllAtendimentos(tipoAtendimento);
+        const { observacao } = req.query;
+        const atendimentos = await getAllAtendimentos(observacao);
         res.status(200).json({ message: 'Lista de atendimentos', data: atendimentos });
     } catch (error) {
         res.status(500).json({ error: 'Erro ao obter atendimentos' });
@@ -80,7 +81,7 @@ async function getById(req, res) {
     try {
         const { id } = req.params;
         if (!isValidId(id)) {
-            return res.status(422).json({ error: 'Id inválido. Informe um número inteiro positivo.' });
+            return res.status(422).json({ error: 'Id inválido. Informe um ObjectId válido do MongoDB.' });
         }
         const atendimento = await getAtendimentoById(id);
         if (!atendimento) {
@@ -110,7 +111,7 @@ async function update(req, res) {
     try {
         const { id } = req.params;
         if (!isValidId(id)) {
-            return res.status(422).json({ error: 'Id inválido. Informe um número inteiro positivo.' });
+            return res.status(422).json({ error: 'Id inválido. Informe um ObjectId válido do MongoDB.' });
         }
         const data = req.body;
         const validation = validateBody(data, { isUpdate: true });
@@ -131,7 +132,7 @@ async function deleteById(req, res) {
     try {
         const { id } = req.params;
         if (!isValidId(id)) {
-            return res.status(422).json({ error: 'Id inválido. Informe um número inteiro positivo.' });
+            return res.status(422).json({ error: 'Id inválido. Informe um ObjectId válido do MongoDB.' });
         }
         const deletedAtendimento = await deleteAtendimento(id);
         if (!deletedAtendimento) {
