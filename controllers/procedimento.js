@@ -1,102 +1,172 @@
-import mongoose from 'mongoose';
-import { getAllProcedimentos,
+import mongoose from "mongoose";
+import {
+    deleteProcedimento,
+    getAllProcedimentos,
     getProcedimentoId,
-    postProcedimento,
     patchProcedimento,
-    deleteProcedimento
- } from '../services/procedimento';
+    postProcedimento
+} from "../services/procedimento.js";
+
+const CAMPOS_PERMITIDOS = ["descricao", "tipoProcedimento", "nome", "valor"];
 
 function idValido(id) {
-    return typeof id === 'string'
-        && /^[0-9a-fA-F]{24}$/.test(id);
+    return typeof id === "string"
+        && /^[0-9a-fA-F]{24}$/.test(id)
         && mongoose.Types.ObjectId.isValid(id);
 }
 
-function procedimentoValido(procedimento){
-    if (!procedimento.nome) {
-        return false;
-    }
-    if (!procedimento.descricao) {
-        return false;
-    }
-    if (!procedimento.tipoProcedimento) {
-        return false;
-    }
-    if (procedimento.valor === undefined) {
-        return false;
-    }
-    return true;
+function textoObrigatorio(valor) {
+    return typeof valor === "string" && valor.trim() !== "";
 }
 
+function numeroNaoNegativo(valor) {
+    return typeof valor === "number" && Number.isFinite(valor) && valor >= 0;
+}
+
+function corpoVazio(body) {
+    return !body || Object.keys(body).length === 0;
+}
+
+function camposInvalidos(body) {
+    return Object.keys(body).filter((campo) => !CAMPOS_PERMITIDOS.includes(campo));
+}
+
+function validarProcedimento(procedimento, { parcial = false } = {}) {
+    if (corpoVazio(procedimento)) {
+        return parcial
+            ? "Informe ao menos um campo para atualizar."
+            : "Informe os campos obrigatorios: nome, descricao, tipoProcedimento e valor.";
+    }
+
+    const camposNaoPermitidos = camposInvalidos(procedimento);
+    if (camposNaoPermitidos.length > 0) {
+        return `Campos nao permitidos: ${camposNaoPermitidos.join(", ")}.`;
+    }
+
+    if (!parcial || procedimento.nome !== undefined) {
+        if (!textoObrigatorio(procedimento.nome)) return "O campo nome e obrigatorio.";
+    }
+
+    if (!parcial || procedimento.descricao !== undefined) {
+        if (!textoObrigatorio(procedimento.descricao)) return "O campo descricao e obrigatorio.";
+    }
+
+    if (!parcial || procedimento.tipoProcedimento !== undefined) {
+        if (!textoObrigatorio(procedimento.tipoProcedimento)) return "O campo tipoProcedimento e obrigatorio.";
+    }
+
+    if (!parcial || procedimento.valor !== undefined) {
+        if (!numeroNaoNegativo(procedimento.valor)) return "O campo valor deve ser um numero maior ou igual a zero.";
+    }
+
+    return null;
+}
+
+function erroInterno(res, error) {
+    console.error(error);
+
+    if (error.name === "ValidationError" || error.name === "CastError") {
+        return res.status(400).json({ mensagem: "Dados invalidos." });
+    }
+
+    return res.status(500).json({ mensagem: "Erro interno do servidor." });
+}
 
 export async function getProcedimentos(req, res) {
     try {
         const procedimentos = await getAllProcedimentos();
-        res.send(procedimentos);
+        return res.status(200).json(procedimentos);
     } catch (error) {
-        res.status(500).send(error.message);
+        return erroInterno(res, error);
     }
 }
 
 export async function getProcedimento(req, res) {
     try {
-        const id = req.params.id;
+        const { id } = req.params;
+
         if (!idValido(id)) {
-            res.status(422).send('O id deve ser um número');
+            return res.status(400).json({ mensagem: "ID invalido." });
         }
+
         const procedimento = await getProcedimentoId(id);
+
         if (!procedimento) {
-            return res.status(404).send('Procedimento não encontrado');
+            return res.status(404).json({ mensagem: "Procedimento nao encontrado." });
         }
-        res.send(procedimento);
+
+        return res.status(200).json(procedimento);
     } catch (error) {
-        res.status(500).send(error.message);
+        return erroInterno(res, error);
     }
 }
 
 export async function criarProcedimento(req, res) {
     try {
-        const body = req.body;
-        if (!procedimentoValido(body)) {
-            return res.status(422).send('Todos os campos são obrigatórios: nome, descrição, tipo do procedimento e valor');
+        const procedimentoNovo = req.body || {};
+        const erroValidacao = validarProcedimento(procedimentoNovo);
+
+        if (erroValidacao) {
+            return res.status(400).json({ mensagem: erroValidacao });
         }
-        const novoProcedimento = await postProcedimento(body);
-        res.status(201).send(novoProcedimento);
+
+        const procedimentoCriado = await postProcedimento(procedimentoNovo);
+
+        return res.status(201).json({
+            mensagem: "Procedimento criado com sucesso.",
+            procedimento: procedimentoCriado
+        });
     } catch (error) {
-        res.status(500).send(error.message);
+        return erroInterno(res, error);
     }
 }
 
 export async function editarProcedimento(req, res) {
     try {
-        const id = req.params.id;
+        const { id } = req.params;
+        const modificacoes = req.body || {};
+
         if (!idValido(id)) {
-            return res.status(422).send('O id deve ser um número');
+            return res.status(400).json({ mensagem: "ID invalido." });
         }
-        const body = req.body;
-        const procedimentoEditado = await patchProcedimento(id, body);
+
+        const erroValidacao = validarProcedimento(modificacoes, { parcial: true });
+
+        if (erroValidacao) {
+            return res.status(400).json({ mensagem: erroValidacao });
+        }
+
+        const procedimentoEditado = await patchProcedimento(id, modificacoes);
 
         if (!procedimentoEditado) {
-            return res.status(404).send('Procedimento não encontrado');
+            return res.status(404).json({ mensagem: "Procedimento nao encontrado." });
         }
-        res.send(procedimentoEditado);
+
+        return res.status(200).json({
+            mensagem: "Procedimento atualizado com sucesso.",
+            procedimento: procedimentoEditado
+        });
     } catch (error) {
-        res.status(500).send(error.message);
+        return erroInterno(res, error);
     }
 }
 
 export async function deletarProcedimento(req, res) {
     try {
-        const id = req.params.id;
+        const { id } = req.params;
+
         if (!idValido(id)) {
-            return res.status(422).send('O id deve ser um número');
+            return res.status(400).json({ mensagem: "ID invalido." });
         }
+
         const procedimentoRemovido = await deleteProcedimento(id);
+
         if (!procedimentoRemovido) {
-            return res.status(404).send('Procedimento não encontrado');
+            return res.status(404).json({ mensagem: "Procedimento nao encontrado." });
         }
-        res.send('Procedimento deletado com sucesso');
+
+        return res.status(200).json({ mensagem: "Procedimento deletado com sucesso." });
     } catch (error) {
-        res.status(500).send(error.message);
+        return erroInterno(res, error);
     }
 }

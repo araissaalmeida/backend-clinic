@@ -1,10 +1,11 @@
-const { Router } = require('express');
-const { getProcedimentos,
+import { Router } from 'express';
+import {
+    getProcedimentos,
     getProcedimento,
     criarProcedimento,
     editarProcedimento,
     deletarProcedimento
- } = require('../controllers/procedimento');
+} from '../controllers/procedimento.js';
 
 const router = Router();
 
@@ -14,4 +15,4 @@ router.post('/', criarProcedimento);
 router.patch('/:id', editarProcedimento);
 router.delete('/:id', deletarProcedimento);
 
-module.exports = router;
+export default router;
