@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+    buscarProcedimentosPorNome,
     getProcedimentos,
     getProcedimento,
     criarProcedimento,
@@ -10,6 +11,7 @@ import {
 const router = Router();
 
 router.get('/', getProcedimentos);
+router.get('/busca', buscarProcedimentosPorNome);
 router.get('/:id', getProcedimento);
 router.post('/', criarProcedimento);
 router.patch('/:id', editarProcedimento);

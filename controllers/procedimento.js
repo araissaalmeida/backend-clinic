@@ -7,6 +7,9 @@ import {
     postProcedimento
 } from "../services/procedimento.js";
 
+const CAMPOS_OBRIGATORIOS = ["nome", "descricao", "tipoProcedimento", "valor"];
+const PARAMETROS_BUSCA_PERMITIDOS = ["nome"];
+
 function idValido(id) {
     return typeof id === "string"
         && /^[0-9a-fA-F]{24}$/.test(id)
@@ -25,11 +28,19 @@ function corpoVazio(body) {
     return !body || Object.keys(body).length === 0;
 }
 
+function camposInvalidos(procedimento) {
+    return Object.keys(procedimento).filter((campo) => !CAMPOS_OBRIGATORIOS.includes(campo));
+}
+
+function parametrosBuscaInvalidos(query) {
+    return Object.keys(query).filter((parametro) => !PARAMETROS_BUSCA_PERMITIDOS.includes(parametro));
+}
+
 function validarProcedimento(procedimento, { parcial = false } = {}) {
     if (corpoVazio(procedimento)) {
         return parcial
             ? "Informe ao menos um campo para atualizar."
-            : "Informe os campos obrigatorios: nome, descricao, tipoProcedimento e valor.";
+            : "Informe os campos obrigatorios: nome, descricao, tipo do Procedimento e valor.";
     }
 
     const camposNaoPermitidos = camposInvalidos(procedimento);
@@ -68,7 +79,29 @@ function erroInterno(res, error) {
 
 export async function getProcedimentos(req, res) {
     try {
-        const procedimentos = await getAllProcedimentos();
+        const { nome } = req.query;
+
+        const procedimentos = await getAllProcedimentos(nome);
+        return res.status(200).json(procedimentos);
+    } catch (error) {
+        return erroInterno(res, error);
+    }
+}
+
+export async function buscarProcedimentosPorNome(req, res) {
+    try {
+        const { nome } = req.query;
+        const parametrosInvalidos = parametrosBuscaInvalidos(req.query);
+
+        if (parametrosInvalidos.length > 0) {
+            return res.status(400).json({ mensagem: `Parametros de busca nao permitidos: ${parametrosInvalidos.join(", ")}.` });
+        }
+
+        if (!textoObrigatorio(nome)) {
+            return res.status(400).json({ mensagem: "O parametro nome deve ser preenchido." });
+        }
+
+        const procedimentos = await getAllProcedimentos(nome);
         return res.status(200).json(procedimentos);
     } catch (error) {
         return erroInterno(res, error);

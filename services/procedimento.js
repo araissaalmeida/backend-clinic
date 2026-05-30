@@ -1,8 +1,14 @@
-import { getProcedimentos } from "../controllers/procedimento.js";
 import Procedimento from "../models/Procedimentos.js";
 
-export async function getAllProcedimentos() {
-    const listaProcedimento = await getProcedimentos.find({});
+
+export async function getAllProcedimentos(nome) {
+    const consulta = {};
+
+    if (nome) {
+        consulta.nome = { $regex: nome, $options: "i" };
+    }
+
+    const listaProcedimento = await Procedimento.find(consulta);
     return listaProcedimento;
 }
 

@@ -107,6 +107,18 @@ http://localhost:3000
 GET /procedimentos
 ```
 
+### Buscar procedimentos por nome
+
+```http
+GET /procedimentos?nome=Faceta
+```
+
+Ou:
+
+```http
+GET /procedimentos/busca?nome=Faceta
+```
+
 ### Buscar procedimento por ID
 
 ```http
