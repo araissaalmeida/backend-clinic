@@ -1,68 +1,32 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { getProcedimentos } from "../controllers/procedimento.js";
+import Procedimento from "../models/Procedimentos.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const filePath = path.join(__dirname, '../database/procedimento.json');
-
-async function getAllProcedimentos() {
-    const content = await fs.promises.readFile(filePath, 'utf8');
-    return JSON.parse(content);
+export async function getAllProcedimentos() {
+    const listaProcedimento = await getProcedimentos.find({});
+    return listaProcedimento;
 }
 
-async function salvarProcedimentos(procedimentos) {
-    await fs.promises.writeFile(filePath, JSON.stringify(procedimentos, null, 2));
+export async function getProcedimentoId(id) {
+    const procedimento = await Procedimento.findById(id);
+    return procedimento;
 }
 
-async function getProcedimentoId(idProcedimento) {
-    const procedimentos = await getAllProcedimentos();
-    const idNumber = Number(idProcedimento);
-    return procedimentos.find(procedimento => procedimento.idProcedimento === idNumber);
+export async function existeProcedimentoId(id){
+    const procedimento = await Procedimento.findById(id);
+    return Boolean(procedimento);
 }
 
-async function postProcedimento(procedimentoNovo) {
-    const procedimentos = await getAllProcedimentos();
-    const ultimoId = procedimentos.length > 0 ? procedimentos[procedimentos.length - 1].idProcedimento : 0;
-    procedimentoNovo.idProcedimento = ultimoId + 1;
-    procedimentos.push(procedimentoNovo);
-    await salvarProcedimentos(procedimentos);
-
-    return procedimentoNovo;
+export async function postProcedimento(procedimentoNovo) {
+    return Procedimento.create(procedimentoNovo);
 }
 
-async function patchProcedimento(idProcedimento, novosDados) {
-    const procedimentos = await getAllProcedimentos();
-    const idNumber = Number(idProcedimento);
-    const index = procedimentos.findIndex(procedimento => procedimento.idProcedimento === idNumber);
-    if (index === -1) {
-        return null;
-    }
-    procedimentos[index] = {
-        ...procedimentos[index],
-        ...novosDados,
-        idProcedimento: idNumber
-    };
-    await salvarProcedimentos(procedimentos);
-    return procedimentos[index];
+export async function patchProcedimento(id, novosDados) {
+    return Procedimento.findByIdAndUpdate(id, novosDados, {
+        new: true,
+        runValidators: true
+    });
 }
 
-async function deleteProcedimento(idProcedimento) {
-    const procedimentos = await getAllProcedimentos();
-    const idNumber = Number(idProcedimento);
-    const index = procedimentos.findIndex(procedimento => procedimento.idProcedimento === idNumber);
-    if (index === -1) {
-        return null;
-    }
-    const procedimentoRemovido = procedimentos.splice(index, 1);
-    await salvarProcedimentos(procedimentos);
-    return procedimentoRemovido[0];
+export async function deleteProcedimento(id) {
+    return Procedimento.findByIdAndDelete(id);
 }
-
-export {
-    getAllProcedimentos,
-    getProcedimentoId,
-    postProcedimento,
-    patchProcedimento,
-    deleteProcedimento
-};
