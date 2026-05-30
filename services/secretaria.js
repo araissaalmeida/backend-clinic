@@ -1,53 +1,25 @@
-const fs = require("fs");
+import fs from "fs";
+import secretarias from "../models/Secretaria.js";
 
-const caminhoArquivo = "./database/secretaria.json";
 
-
-const lerArquivo = () => {
-    return JSON.parse(fs.readFileSync(caminhoArquivo, "utf-8"));
+export async function getTodasSecretarias() {
+    const listaSecretaria = await secretarias.find({});
+    return listaSecretaria;
 };
 
-const escreverArquivo = (dados) => {
-    fs.writeFileSync(caminhoArquivo,JSON.stringify(dados, null, 2));
+export async function getSecretariaPorId(id){
+    const listaSecretaria = await secretarias.findById(id);
+    return listaSecretaria;
 };
 
-const getTodasSecretarias = () => {
-    return lerArquivo();
+export async function insereSecretaria (secretariaNova){
+    await secretarias.create(secretariaNova);
 };
 
-function getSecretariaPorId(id){
-    const secretarias = lerArquivo()
-    return secretarias.find(secretaria => secretaria.id === id )
+export async function modificaSecretaria(modificacoes, id) {
+    await secretarias.findByIdAndUpdate(id,modificacoes);
 };
 
-const insereSecretaria = (secretariaNova) => {
-    const secretarias = lerArquivo();
-    secretarias.push(secretariaNova);
-    escreverArquivo(secretarias);
+export async function excluirSecretaria(id) {
+    await secretarias.findByIdAndDelete(id);
 };
-
-const modificaSecretaria = (modificacoes, id) => {
-    const secretarias = lerArquivo();
-    const indiceSecretaria = secretarias.findIndex(secretaria => secretaria.id === id);
-
-    if (indiceSecretaria === -1) {
-        throw new Error("Secretaria não encontrada");
-    }
-    secretarias[indiceSecretaria] = {...secretarias[indiceSecretaria],...modificacoes};
-
-    escreverArquivo(secretarias);
-    return secretarias[indiceSecretaria];
-};
-
-const excluirSecretaria = (id) => {
-    const secretarias = lerArquivo();
-    const secretariaExiste = secretarias.some(secretaria => secretaria.id === id);
-
-    if (!secretariaExiste) {
-        throw new Error("Secretaria não encontrada");
-    }
-    const novaListaSecretarias = secretarias.filter(secretaria => secretaria.id !== id);
-    escreverArquivo(novaListaSecretarias);
-};
-
-module.exports = {getTodasSecretarias, getSecretariaPorId, insereSecretaria,modificaSecretaria,excluirSecretaria}

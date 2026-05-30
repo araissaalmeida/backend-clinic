@@ -1,20 +1,20 @@
-const { getTodasSecretarias, getSecretariaPorId, insereSecretaria, modificaSecretaria, excluirSecretaria } = require("../services/secretaria");
+import { getTodasSecretarias, getSecretariaPorId, insereSecretaria, modificaSecretaria, excluirSecretaria } from "../services/secretaria.js";
 
 
-const getSecretarias = (req,res) =>{
+export const getSecretarias = async (req,res) =>{
     try {
-        const secretarias = getTodasSecretarias();
+        const secretarias = await getTodasSecretarias();
         res.json(secretarias)     
     } catch (error) {
         res.status(500).json(error.message)
     }
 }
 
-const getSecretaria = (req,res) => {
+export const getSecretaria = async (req,res) => {
     try {
         const id = req.params.id
-        if (id && Number(id)) {
-            const secretaria = getSecretariaPorId(id)
+        if (id && String(id)) {
+            const secretaria = await getSecretariaPorId(id)
             res.json(secretaria)
         } else {
             res.status(422).json({message: "Id inválido"})
@@ -24,7 +24,7 @@ const getSecretaria = (req,res) => {
     }
 }
 
-const postSecretaria = (req,res) => {
+export const postSecretaria = async (req,res) => {
     try {
         const body = req.body
         if (req.body.nome) {
@@ -38,15 +38,15 @@ const postSecretaria = (req,res) => {
     }
 }
 
-const patchSecretaria = (req, res) => {
+export const patchSecretaria = async (req, res) => {
     try {
         const id = req.params.id;
         const modificacoes = req.body;
 
-        if (!id || isNaN(Number(id))) {
+        if (!id || isNaN(String(id))) {
             return res.status(422).json({message: "Id inválido"});
         }
-        const secretariaAtualizada = modificaSecretaria(modificacoes,id);
+        const secretariaAtualizada = await modificaSecretaria(modificacoes,id);
 
         return res.status(200).json({
             message: "Secretaria atualizada!",
@@ -60,11 +60,11 @@ const patchSecretaria = (req, res) => {
     }
 };
 
-const deleteSecretaria = (req, res) => {
+export const deleteSecretaria = (req, res) => {
     try {
         const id = req.params.id;
 
-        if (!id || isNaN(Number(id))) {
+        if (!id || isNaN(String(id))) {
             return res.status(422).json({message: "Id inválido" });
         }
         excluirSecretaria(id);
@@ -77,5 +77,3 @@ const deleteSecretaria = (req, res) => {
         return res.status(500).json({error: error.message});
     }
 };
-
-module.exports = {getSecretarias, getSecretaria, postSecretaria, patchSecretaria,deleteSecretaria}

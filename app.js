@@ -1,17 +1,21 @@
-const express = require('express');
+import express from "express";
+import 'dotenv/config';
+import pool from './config/dbConnect.js';
+import atendimentoRoutes from './routes/atendimento.js';
+import dentistaRoutes from './routes/dentista.js';
+import rotaProcedimentos from './routes/procedimentos.js';
+import rotaSecretaria from "./routes/secretaria.js";
+
 const app = express();
 const PORT = 3000;
 
+const conexao = await pool();
 
-const dentistaRoutes = require("./routes/dentista");
 
-
-const rotaProcedimentos = require('./routes/procedimentos.js');
-
-const atendimentoRoutes = require('./routes/atendimento');
-
-const rotaSecretaria = require("./routes/secretaria");
-
+conexao.on('error', console.error.bind(console, 'Erro de conexão:'));
+conexao.once('open', () => {
+    console.log('Conexão com o banco de dados estabelecida com sucesso!');
+});
 
 app.use(express.json());
 app.use('/secretaria', rotaSecretaria);
