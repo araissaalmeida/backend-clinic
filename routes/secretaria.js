@@ -1,17 +1,16 @@
-const {Router} = require("express");
-const { getSecretarias, getSecretaria, postSecretaria, patchSecretaria, deleteSecretaria } = require("../controllers/secretaria");
+import { Router } from "express";
+import { getSecretarias, getSecretaria, postSecretaria, patchSecretaria, deleteSecretaria } from "../controllers/secretaria.js";
 
-const router = Router();
+const rotaSecretaria = Router();
 
-router.get('/', getSecretarias)
+rotaSecretaria.get('/', getSecretarias)
 
-router.get('/:id', getSecretaria)
+rotaSecretaria.get('/:id', getSecretaria)
 
-router.post('/', postSecretaria)
+rotaSecretaria.post('/', postSecretaria)
 
-router.patch('/:id', patchSecretaria)
+rotaSecretaria.patch('/:id', patchSecretaria)
 
-router.delete('/:id', deleteSecretaria)
+rotaSecretaria.delete('/:id', deleteSecretaria)
 
-
-module.exports = router;
+export default rotaSecretaria;
