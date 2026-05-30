@@ -1,13 +1,11 @@
 import express from 'express';
-
-import { create, deleteById, getAll, getById, update } from '../controllers/atendimento.js';
+import atendimentoController from '../controllers/atendimento.js';
 
 const router = express.Router();
 
-router.get('/', getAll);
-router.get('/:id', getById);
-router.post('/', create);
-router.patch('/:id', update);
-router.delete('/:id', deleteById);
-
-export default router;
+router.get('/', atendimentoController.getAll);
+router.get('/:id', atendimentoController.getById);
+router.post('/', atendimentoController.create);
+router.patch('/:id', atendimentoController.update);
+router.delete('/:id', atendimentoController.deleteById);
+export default router; 
