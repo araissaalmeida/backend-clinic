@@ -1,24 +1,21 @@
-const fs = require('fs');
-const path = require('path');
+import procedimento from '.../models/procedimento.js';
 
-const filePath = path.join(__dirname, '../database/procedimento.json');
-
-async function getAllProcedimentos() {
+export async function getAllProcedimentos() {
     const content = await fs.promises.readFile(filePath, 'utf8');
     return JSON.parse(content);
 }
 
-async function salvarProcedimentos(procedimentos) {
+export async function salvarProcedimentos(procedimentos) {
     await fs.promises.writeFile(filePath, JSON.stringify(procedimentos, null, 2));
 }
 
-async function getProcedimentoId(idProcedimento) {
+export async function getProcedimentoId(idProcedimento) {
     const procedimentos = await getAllProcedimentos();
     const idNumber = Number(idProcedimento);
     return procedimentos.find(procedimento => procedimento.idProcedimento === idNumber);
 }
 
-async function postProcedimento(procedimentoNovo) {
+export async function postProcedimento(procedimentoNovo) {
     const procedimentos = await getAllProcedimentos();
     const ultimoId = procedimentos.length > 0 ? procedimentos[procedimentos.length - 1].idProcedimento : 0;
     procedimentoNovo.idProcedimento = ultimoId + 1;
@@ -28,7 +25,7 @@ async function postProcedimento(procedimentoNovo) {
     return procedimentoNovo;
 }
 
-async function patchProcedimento(idProcedimento, novosDados) {
+export async function patchProcedimento(idProcedimento, novosDados) {
     const procedimentos = await getAllProcedimentos();
     const idNumber = Number(idProcedimento);
     const index = procedimentos.findIndex(procedimento => procedimento.idProcedimento === idNumber);
@@ -44,7 +41,7 @@ async function patchProcedimento(idProcedimento, novosDados) {
     return procedimentos[index];
 }
 
-async function deleteProcedimento(idProcedimento) {
+export async function deleteProcedimento(idProcedimento) {
     const procedimentos = await getAllProcedimentos();
     const idNumber = Number(idProcedimento);
     const index = procedimentos.findIndex(procedimento => procedimento.idProcedimento === idNumber);
@@ -55,11 +52,3 @@ async function deleteProcedimento(idProcedimento) {
     await salvarProcedimentos(procedimentos);
     return procedimentoRemovido[0];
 }
-
-module.exports = {
-    getAllProcedimentos,
-    getProcedimentoId,
-    postProcedimento,
-    patchProcedimento,
-    deleteProcedimento
-};

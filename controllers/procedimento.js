@@ -1,19 +1,15 @@
-const { getAllProcedimentos,
+import mongoose from 'mongoose';
+import { getAllProcedimentos,
     getProcedimentoId,
     postProcedimento,
     patchProcedimento,
     deleteProcedimento
- } = require('../services/procedimento');
+ } from '../services/procedimento';
 
 function idValido(id) {
-    const idNumber = Number(id);
-    if (idNumber <= 0) {
-        return false;
-    }
-    if (!Number.isInteger(idNumber)) {
-        return false;
-    }
-    return true;
+    return typeof id === 'string'
+        && /^[0-9a-fA-F]{24}$/.test(id);
+        && mongoose.Types.ObjectId.isValid(id);
 }
 
 function procedimentoValido(procedimento){
@@ -33,7 +29,7 @@ function procedimentoValido(procedimento){
 }
 
 
-async function getProcedimentos(req, res) {
+export async function getProcedimentos(req, res) {
     try {
         const procedimentos = await getAllProcedimentos();
         res.send(procedimentos);
@@ -42,7 +38,7 @@ async function getProcedimentos(req, res) {
     }
 }
 
-async function getProcedimento(req, res) {
+export async function getProcedimento(req, res) {
     try {
         const id = req.params.id;
         if (!idValido(id)) {
@@ -58,7 +54,7 @@ async function getProcedimento(req, res) {
     }
 }
 
-async function criarProcedimento(req, res) {
+export async function criarProcedimento(req, res) {
     try {
         const body = req.body;
         if (!procedimentoValido(body)) {
@@ -71,7 +67,7 @@ async function criarProcedimento(req, res) {
     }
 }
 
-async function editarProcedimento(req, res) {
+export async function editarProcedimento(req, res) {
     try {
         const id = req.params.id;
         if (!idValido(id)) {
@@ -89,7 +85,7 @@ async function editarProcedimento(req, res) {
     }
 }
 
-async function deletarProcedimento(req, res) {
+export async function deletarProcedimento(req, res) {
     try {
         const id = req.params.id;
         if (!idValido(id)) {
@@ -104,12 +100,3 @@ async function deletarProcedimento(req, res) {
         res.status(500).send(error.message);
     }
 }
-
-module.exports = {
-    getProcedimentos,
-    getProcedimento,
-    criarProcedimento,
-    editarProcedimento,
-    deletarProcedimento
-
-};
