@@ -1,11 +1,11 @@
 import { Router } from 'express';
-
-import { getProcedimentos,
+import {
+    getProcedimentos,
     getProcedimento,
     criarProcedimento,
     editarProcedimento,
     deletarProcedimento
- } from '../controllers/procedimento.js';
+} from '../controllers/procedimento.js';
 
 const router = Router();
 
