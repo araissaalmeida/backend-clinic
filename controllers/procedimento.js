@@ -80,24 +80,13 @@ function erroInterno(res, error) {
 export async function getProcedimentos(req, res) {
     try {
         const { nome } = req.query;
-
-        const procedimentos = await getAllProcedimentos(nome);
-        return res.status(200).json(procedimentos);
-    } catch (error) {
-        return erroInterno(res, error);
-    }
-}
-
-export async function buscarProcedimentosPorNome(req, res) {
-    try {
-        const { nome } = req.query;
         const parametrosInvalidos = parametrosBuscaInvalidos(req.query);
 
         if (parametrosInvalidos.length > 0) {
             return res.status(400).json({ mensagem: `Parametros de busca nao permitidos: ${parametrosInvalidos.join(", ")}.` });
         }
 
-        if (!textoObrigatorio(nome)) {
+        if (nome !== undefined && !textoObrigatorio(nome)) {
             return res.status(400).json({ mensagem: "O parametro nome deve ser preenchido." });
         }
 
