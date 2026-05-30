@@ -1,9 +1,9 @@
-const { getAllProcedimentos,
+import { getAllProcedimentos,
     getProcedimentoId,
     postProcedimento,
     patchProcedimento,
     deleteProcedimento
- } = require('../services/procedimento');
+ } from '../services/procedimento.js';
 
 function idValido(id) {
     const idNumber = Number(id);
@@ -105,7 +105,7 @@ async function deletarProcedimento(req, res) {
     }
 }
 
-module.exports = {
+export {
     getProcedimentos,
     getProcedimento,
     criarProcedimento,

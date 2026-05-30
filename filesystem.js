@@ -1,4 +1,4 @@
-const fs = require('fs');
+import fs from 'fs';
 
 function readData(filePath) {
     try {
@@ -18,4 +18,4 @@ function writeData(filePath, data) {
     }
 }
 
-module.exports = { readData, writeData };
+export { readData, writeData };

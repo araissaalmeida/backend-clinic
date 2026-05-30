@@ -1,13 +1,19 @@
-const dentistaService = require("../services/dentista");
+import {
+  listarDentistas as listarDentistasService,
+  buscarDentista as buscarDentistaService,
+  criarDentista as criarDentistaService,
+  editarDentista as editarDentistaService,
+  deletarDentista as deletarDentistaService
+} from '../services/dentista.js';
 
 function listarDentistas(req, res) {
-  const dentistas = dentistaService.listarDentistas();
+  const dentistas = listarDentistasService();
   res.json(dentistas);
 }
 
 function buscarDentista(req, res) {
   const { cpf } = req.params;
-  const dentista = dentistaService.buscarDentista(cpf);
+  const dentista = buscarDentistaService(cpf);
   
   if (!dentista) {
     return res.status(404).json({ error: "Dentista não encontrado" });
@@ -18,7 +24,7 @@ function buscarDentista(req, res) {
 
 function criarDentista(req, res) {
   const novoDentista = req.body;
-  const dentista = dentistaService.criarDentista(novoDentista);
+  const dentista = criarDentistaService(novoDentista);
   
   if (!dentista) {
     return res.status(400).json({ error: "CPF ou CRO já existe" });
@@ -30,7 +36,7 @@ function criarDentista(req, res) {
 function editarDentista(req, res) {
   const { cpf } = req.params;
   const dadosAtualizados = req.body;
-  const dentista = dentistaService.editarDentista(cpf, dadosAtualizados);
+  const dentista = editarDentistaService(cpf, dadosAtualizados);
   
   if (!dentista) {
     return res.status(404).json({ error: "Dentista não encontrado" });
@@ -41,7 +47,7 @@ function editarDentista(req, res) {
 
 function deletarDentista(req, res) {
   const { cpf } = req.params;
-  const deletado = dentistaService.deletarDentista(cpf);
+  const deletado = deletarDentistaService(cpf);
   
   if (!deletado) {
     return res.status(404).json({ error: "Dentista não encontrado" });
@@ -50,7 +56,7 @@ function deletarDentista(req, res) {
   res.status(204).send();
 }
 
-module.exports = {
+export {
   listarDentistas,
   buscarDentista,
   criarDentista,
