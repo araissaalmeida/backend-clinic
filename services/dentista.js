@@ -1,99 +1,66 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import Dentista from "../models/Dentista.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const caminhoBanco = path.join(__dirname, '../database/dentista.json');
-
-function lerBanco() {
-  const dados = fs.readFileSync(caminhoBanco, "utf-8");
-  return JSON.parse(dados);
-}
-
-function salvarBanco(dados) {
-  fs.writeFileSync(caminhoBanco, JSON.stringify(dados, null, 2));
-}
-
-function listarDentistas() {
-  return lerBanco();
-}
-
-function buscarDentista(cpf) {
-  const dentistas = lerBanco();
-  return dentistas.find(
-    (dentista) => dentista.CPF_Dentista === cpf || dentista._id === cpf
-  );
-}
-
-function criarDentista(novoDentista) {
-  const dentistas = lerBanco();
-
-  const cpfExistente = dentistas.find(
-    (dentista) => dentista.CPF_Dentista === novoDentista.CPF_Dentista
-  );
-
-  const croExistente = dentistas.find(
-    (dentista) => dentista.CRO === novoDentista.CRO
-  );
-
-  if (cpfExistente || croExistente) {
-    return null;
+async function listarDentistas(nomeBusca) {
+  try {
+    if (nomeBusca) {
+      // Busca por qualquer parte do nome, ignorando letras maiúsculas/minúsculas
+      return await Dentista.find({ nome: { $regex: nomeBusca, $options: 'i' } });
+    }
+    // Se não passar nome, retorna todos
+    return await Dentista.find();
+  } catch (error) {
+    throw new Error("Erro ao listar dentistas: " + error.message);
   }
-
-  const dentista = {
-    _id: novoDentista.CPF_Dentista,
-    CPF_Dentista: novoDentista.CPF_Dentista,
-    nome: novoDentista.nome,
-    CRO: novoDentista.CRO,
-    croUF: novoDentista.croUF,
-    especialidade: novoDentista.especialidade
-  };
-
-  dentistas.push(dentista);
-  salvarBanco(dentistas);
-
-  return dentista;
 }
 
-function editarDentista(cpf, dadosAtualizados) {
-  const dentistas = lerBanco();
-
-  const indiceDentista = dentistas.findIndex(
-    (dentista) => dentista.CPF_Dentista === cpf
-  );
-
-  if (indiceDentista === -1) {
-    return null;
+async function buscarDentista(cpf) {
+  try {
+    return await Dentista.findById(cpf);
+  } catch (error) {
+    throw new Error("Erro ao buscar dentista: " + error.message);
   }
-
-  dentistas[indiceDentista] = {
-    ...dentistas[indiceDentista],
-    ...dadosAtualizados
-  };
-
-  salvarBanco(dentistas);
-  return dentistas[indiceDentista];
 }
 
-function deletarDentista(cpf) {
-  const dentistas = lerBanco();
+async function criarDentista(novoDentista) {
+  try {
+    const dentistaExistente = await Dentista.findById(novoDentista._id);
+    const croExistente = await Dentista.findOne({ CRO: novoDentista.CRO });
 
-  const indiceDentista = dentistas.findIndex(
-    (dentista) => dentista.CPF_Dentista === cpf
-  );
+    if (dentistaExistente || croExistente) {
+      return null;
+    }
 
-  if (indiceDentista === -1) {
-    return false;
+    const dentista = new Dentista(novoDentista);
+    await dentista.save();
+    return dentista;
+  } catch (error) {
+    throw new Error("Erro ao criar dentista: " + error.message);
   }
-
-  dentistas.splice(indiceDentista, 1);
-  salvarBanco(dentistas);
-
-  return true;
 }
 
-export {
+async function editarDentista(cpf, dadosAtualizados) {
+  try {
+    const dentistaAtualizado = await Dentista.findByIdAndUpdate(
+      cpf,
+      dadosAtualizados,
+      { new: true }
+    );
+    return dentistaAtualizado;
+  } catch (error) {
+    throw new Error("Erro ao editar dentista: " + error.message);
+  }
+}
+
+async function deletarDentista(cpf) {
+  try {
+    const resultado = await Dentista.findByIdAndDelete(cpf);
+    return resultado !== null;
+  } catch (error) {
+    throw new Error("Erro ao deletar dentista: " + error.message);
+  }
+}
+
+export default {
   listarDentistas,
   buscarDentista,
   criarDentista,
