@@ -1,5 +1,10 @@
-const {createAtendimento, deleteAtendimento, getAllAtendimentos,
-     getAtendimentoById, updateAtendimento} = require('../services/atendimento');
+import {
+    createAtendimento,
+    deleteAtendimento,
+    getAllAtendimentos,
+    getAtendimentoById,
+    updateAtendimento
+} from '../services/atendimento.js';
 
 const allowedBodyFields = [
     'idAtendimento',
@@ -63,7 +68,8 @@ function validateBody(data, { isUpdate = false } = {}) {
 
 async function getAll(req, res) {
     try {
-        const atendimentos = await getAllAtendimentos();
+        const { tipoAtendimento } = req.query;
+        const atendimentos = await getAllAtendimentos(tipoAtendimento);
         res.status(200).json({ message: 'Lista de atendimentos', data: atendimentos });
     } catch (error) {
         res.status(500).json({ error: 'Erro ao obter atendimentos' });
@@ -137,7 +143,7 @@ async function deleteById(req, res) {
     }
 }
 
-module.exports = {
+export {
     getAll,
     getById,
     create,
