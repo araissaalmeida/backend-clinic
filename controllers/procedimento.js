@@ -7,8 +7,6 @@ import {
     postProcedimento
 } from "../services/procedimento.js";
 
-const CAMPOS_PERMITIDOS = ["descricao", "tipoProcedimento", "nome", "valor"];
-
 function idValido(id) {
     return typeof id === "string"
         && /^[0-9a-fA-F]{24}$/.test(id)
@@ -25,10 +23,6 @@ function numeroNaoNegativo(valor) {
 
 function corpoVazio(body) {
     return !body || Object.keys(body).length === 0;
-}
-
-function camposInvalidos(body) {
-    return Object.keys(body).filter((campo) => !CAMPOS_PERMITIDOS.includes(campo));
 }
 
 function validarProcedimento(procedimento, { parcial = false } = {}) {

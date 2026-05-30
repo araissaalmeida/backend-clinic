@@ -1,11 +1,19 @@
-import Procedimento from "../models/Procedimento.js";
+import { getProcedimentos } from "../controllers/procedimento.js";
+import Procedimento from "../models/Procedimentos.js";
 
 export async function getAllProcedimentos() {
-    return Procedimento.find({});
+    const listaProcedimento = await getProcedimentos.find({});
+    return listaProcedimento;
 }
 
 export async function getProcedimentoId(id) {
-    return Procedimento.findById(id);
+    const procedimento = await Procedimento.findById(id);
+    return procedimento;
+}
+
+export async function existeProcedimentoId(id){
+    const procedimento = await Procedimento.findById(id);
+    return Boolean(procedimento);
 }
 
 export async function postProcedimento(procedimentoNovo) {
