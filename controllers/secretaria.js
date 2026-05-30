@@ -1,5 +1,5 @@
 import { getTodasSecretarias, getSecretariaPorId, insereSecretaria, modificaSecretaria, excluirSecretaria } from "../services/secretaria.js";
-
+import mongoose from "mongoose";
 
 export const getSecretarias = async (req,res) =>{
     try {
@@ -28,7 +28,7 @@ export const postSecretaria = async (req,res) => {
     try {
         const body = req.body
         if (req.body.nome) {
-            insereSecretaria(body)
+            await insereSecretaria(body)
             res.status(201).json({message: "Secretária cadastrada!"})
         } else {
             res.status(422).json({message:"O nome é obrigatório"})
@@ -60,14 +60,14 @@ export const patchSecretaria = async (req, res) => {
     }
 };
 
-export const deleteSecretaria = (req, res) => {
+export const deleteSecretaria = async (req, res) => {
     try {
         const id = req.params.id;
 
         if (!id || isNaN(String(id))) {
             return res.status(422).json({message: "Id inválido" });
         }
-        excluirSecretaria(id);
+        await excluirSecretaria(id);
 
         return res.status(200).json({
             message: "Secretaria removida!"
