@@ -43,7 +43,7 @@ export const patchSecretaria = async (req, res) => {
         const id = req.params.id;
         const modificacoes = req.body;
 
-        if (!id || isNaN(String(id))) {
+        if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(422).json({message: "Id inválido"});
         }
         const secretariaAtualizada = await modificaSecretaria(modificacoes,id);
@@ -64,7 +64,7 @@ export const deleteSecretaria = async (req, res) => {
     try {
         const id = req.params.id;
 
-        if (!id || isNaN(String(id))) {
+        if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(422).json({message: "Id inválido" });
         }
         await excluirSecretaria(id);
