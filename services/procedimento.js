@@ -18,7 +18,7 @@ export async function getProcedimentoId(id) {
 }
 
 export async function existeProcedimentoId(id){
-    const procedimento = await Procedimento.findById(id);
+    const procedimento = await Procedimento.exists({ _id: id });
     return Boolean(procedimento);
 }
 

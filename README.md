@@ -342,3 +342,33 @@ DELETE /dentistas/:cpf
 ## Observações
 
 - O recurso de dentistas utiliza `PUT` para atualização, enquanto os demais recursos usam `PATCH`.
+
+## Consultas ao MongoDB Atlas
+
+Os serviços em `services/` consultam o MongoDB usando os models do Mongoose.
+Configure `DB_CONNECTION_STRING` no `.env` com o endereço do Atlas e o banco
+`clinica-dentista`, e execute `npm ci` e `npm run dev`.
+O servidor só começa a receber requisições depois de conectar ao banco.
+
+| Recurso | Listar | Filtrar | Buscar um registro |
+| --- | --- | --- | --- |
+| Procedimentos | `GET /procedimentos` | `GET /procedimentos?nome=Faceta` | `GET /procedimentos/:id` |
+| Secretárias | `GET /secretaria` | `GET /secretaria?nome=Maria` ou `GET /secretaria/buscar?nome=Maria` | `GET /secretaria/:id` |
+| Dentistas | `GET /dentistas` | `GET /dentistas?nome=Ana` | `GET /dentistas/:cpf` |
+| Atendimentos | `GET /atendimentos` | `GET /atendimentos?observacao=retorno` | `GET /atendimentos/:id` |
+
+Use o `_id` retornado pelo MongoDB nas rotas com `:id` (24 caracteres
+hexadecimais). Em atendimentos, `idAtendimento` é um campo separado e não é
+o identificador usado na URL. Em dentistas, o CPF é armazenado no campo `_id`.
+As buscas por texto ignoram diferenças entre maiúsculas e minúsculas.
+
+Exemplo de consulta, com o servidor iniciado:
+
+```bash
+curl 'http://localhost:3000/secretaria?nome=Maria'
+```
+
+A listagem de secretárias retorna um array, inclusive `[]` quando não há
+resultados. A consulta por ID retorna HTTP 422 para um ID inválido e HTTP 404
+quando o registro não existe. Criação e atualização de secretárias retornam o
+registro no campo `data`.
