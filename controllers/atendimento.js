@@ -3,6 +3,7 @@ import {
     deleteAtendimento,
     getAllAtendimentos,
     getAtendimentoById,
+    getAtendimentosPorNomeSecretaria,
     updateAtendimento
 } from '../services/atendimento.js';
 
@@ -50,6 +51,35 @@ async function getById(req, res) {
         }
 
         res.status(500).json({ error: 'Erro ao obter atendimento' });
+    }
+}
+
+async function getPorSecretaria(req, res) {
+    try {
+        const nome = req.query.nome?.trim();
+
+        if (!nome) {
+            return res.status(422).json({
+                error: 'Informe o nome da secretária para buscar os atendimentos.',
+            });
+        }
+
+        const { secretarias, atendimentos } = await getAtendimentosPorNomeSecretaria(nome);
+
+        if (secretarias.length === 0) {
+            return res.status(404).json({
+                error: 'Nenhuma secretária encontrada com esse nome.',
+            });
+        }
+
+        return res.status(200).json({
+            message: 'Atendimentos da secretária.',
+            data: atendimentos,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            error: 'Erro ao obter atendimentos da secretária.',
+        });
     }
 }
 
@@ -127,6 +157,7 @@ async function deleteById(req, res) {
 export {
     getAll,
     getById,
+    getPorSecretaria,
     create,
     update,
     deleteById

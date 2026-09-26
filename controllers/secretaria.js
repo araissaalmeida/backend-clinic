@@ -34,11 +34,11 @@ export const getSecretaria = async (req,res) => {
 export const postSecretaria = async (req,res) => {
     try {
         const body = req.body
-        if (typeof body?.nome === "string" && body.nome.trim()) {
+        if (typeof body?.nome === "string" && body.nome.trim() && /^\d{11}$/.test(body?.cpf)) {
             const secretaria = await insereSecretaria(body)
             res.status(201).json({message: "Secretária cadastrada!", data: secretaria})
         } else {
-            res.status(422).json({message:"O nome é obrigatório"})
+            res.status(422).json({message:"Nome e CPF com 11 dígitos são obrigatórios"})
         }
     } catch (error) {
         res.status(500).json(error.message)
